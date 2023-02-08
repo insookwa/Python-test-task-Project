@@ -1,2 +1,13 @@
 # Python-test-task-Project
-description Preparatory actions (installations, settings , etc.) for the successful operation of the project Access information (usernames/passwords, etc.) Description of how to launch your project
+система использует фреймворк django и имеет несколько конечных точек API. Он используется для идентификации магазинов с указанием соответствующего города, улицы, дома, времени открытия, закрытия и того, открыты они или нет
+
+##Получить все магазины
+127:0.0.1/shops
+
+##получить все города
+
+127.0.0.1/city
+
+##получить все улицы
+
+127.0.0.1/city/street
