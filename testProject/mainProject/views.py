@@ -45,10 +45,12 @@ class ShopSearchView(APIView):
     def get(self,request,format=None):
         street = self.request.query_params.get('street',None)
         city = self.request.query_params.get('city',None)
-
+        open = self.request.query_params.get('open',None)
 
         response = Shop.objects.filter(street=street,city = city)
+
         serializer = ShopSerializer(response,many = Tree)
+        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

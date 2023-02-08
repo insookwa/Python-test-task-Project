@@ -16,15 +16,12 @@ class StreetSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ShopSerializer(serializers.ModelSerializer):
-    # city = CitySerializer(read_only = True)
-    # Street = StreetSerializer(read_only = True)
+
      class Meta:
         model = Shop
         fields = '__all__'
 
 
-class ShopSearchSerializer(serializers.Serializer):
-    city = serializers.CharField(max_length=128)
-    street = serializers.CharField(max_length=128)
+
 
 
