@@ -3,11 +3,12 @@ from .models import Shop , Street , City
 from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status 
+from rest_framework import status ,generics
 from tkinter.tix import Tree
 from rest_framework import filters
 from .filters import DynamicSearchFilter
 from rest_framework.generics import ListCreateAPIView
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ShopsApiView(APIView):
@@ -38,6 +39,20 @@ class ShopsApiView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ShopSearchView(APIView):
+
+    def get(self,request,format=None):
+        street = self.request.query_params.get('street',None)
+        city = self.request.query_params.get('city',None)
+
+
+        response = Shop.objects.filter(street=street,city = city)
+        serializer = ShopSerializer(response,many = Tree)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+        
 
 class CityApiView(APIView):
 
@@ -78,29 +93,12 @@ class StreetApiView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class PostShopSearchView(APIView):
-
-    def post(self,request,format=None):
-        serializer = ShopSearchSerializer(data=request.data)
-        city = request.data.get('city'),
-        street = request.data.get('street')
-
-        shops = Shop.objects.filter(city__name__icontains = city,street__name__icontains = street)
-        serializer =ShopSerializer(shops ,many=Tree)
-        return Response(serializer.data,status=status.HTTP_200_OK)
 
 
-class ShopSearchView(APIView):
-   
-   def get(self,request,format=None):
-    city = self.request.query_params.get('city',None)
-    street = self.request.query_params.get('street',None)
-    response = Shop.objects.filter(city = city, street = street)
-    serializer = ShopSerializer(response,many=Tree)
-    return Response(serializer.data, status=status.HTTP_200_OK)
 
-class QuestionsAPIView(ListCreateAPIView):
-    search_fields = ['city','street']
-    filter_backends = (filters.SearchFilter,)
-    queryset = Shop.objects.all()
-    serializer_class = ShopSerializer
+
+
+
+
+
+
