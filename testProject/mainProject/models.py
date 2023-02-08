@@ -16,6 +16,7 @@ class Street(models.Model):
         verbose_name_plural = 'Streets'
 
     name = models.CharField(max_length=100, null=False,blank=False)
+    city = models.ForeignKey(City, on_delete=models.CASCADE,null=False,blank=False)
 
     def __str__(self):
         return self.name
