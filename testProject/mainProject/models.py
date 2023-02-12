@@ -1,5 +1,5 @@
 from django.db import models
-
+#Модель для города
 class City(models.Model):
     class Meta:
         verbose_name = 'City'
@@ -10,6 +10,7 @@ class City(models.Model):
     def __str__(self):
         return self.name
 
+#модель для улиц
 class Street(models.Model):
     class Meta:
         verbose_name = 'Street'
@@ -21,6 +22,7 @@ class Street(models.Model):
     def __str__(self):
         return self.name
 
+#Модель для магазинов
 class Shop(models.Model):
     class Meta:
         verbose_name = 'Shop'

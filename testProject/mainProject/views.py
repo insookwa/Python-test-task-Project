@@ -1,27 +1,20 @@
-from django.shortcuts import render
 from .models import Shop , Street , City
 from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status ,generics
+from rest_framework import status 
 from tkinter.tix import Tree
-from rest_framework import filters
-from .filters import DynamicSearchFilter
-from rest_framework.generics import ListCreateAPIView
-from django_filters.rest_framework import DjangoFilterBackend
+from datetime import datetime
 
-
+#http://127.0.0.1:8000/shops :Это возвращает при вызове метода get и добавляет магазин при завершении публикации
 class ShopsApiView(APIView):
-
-
 
     def get(self,request,format=None):
         response  = Shop.objects.all()
         serializer =ShopSerializer(response ,many=Tree)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
-        
-
+    
     def post(self,request,*args, **kwargs):
         data = {
                 'name' : request.data.get('name'),
@@ -29,17 +22,17 @@ class ShopsApiView(APIView):
                 'street' : request.data.get('street'),
                 'house' : request.data.get('house'),
                 'opening_time' : request.data.get('opening_time'),
-                'closing_time' : request.data.get('closing_time'),
-                
+                'closing_time' : request.data.get('closing_time'),        
         }
 
-        serializer = ShopSerializer(data=data)
+        serializer = PostShopSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            obj = serializer.save()
+            return Response(obj.id, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+#http://127.0.0.1:8000/shop/?city=1&street=3&open=1 Это возвращает магазины в выбранном городе с указанием того, открыты они или закрыты
 class ShopSearchView(APIView):
 
     def get(self,request,format=None):
@@ -47,15 +40,23 @@ class ShopSearchView(APIView):
         city = self.request.query_params.get('city',None)
         open = self.request.query_params.get('open',None)
 
-        response = Shop.objects.filter(street=street,city = city)
-
-        serializer = ShopSerializer(response,many = Tree)
-        print(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
+        now = datetime.now()
+        requestTime = now.time()
         
+        response = Shop.objects.filter(street=street,city = city)
+        if(open==1):   
+            newResponse =response.objects.filter(closing_time__gte=requestTime)
+            serializer = ShopSearchSerializer(newResponse,many = Tree)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif(open==0):
+            newResponse =response.objects.filter(closing_time__lte=requestTime)
+            serializer = ShopSearchSerializer(newResponse ,many = Tree)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            serializer = ShopSearchSerializer(response ,many = Tree)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
+#http://127.0.0.1:8000/city Это возвращает и добавляет город
 class CityApiView(APIView):
 
     def get(self,request,format=None):
@@ -75,6 +76,8 @@ class CityApiView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#http://127.0.0.1:8000/city/street Это возвращает все улицы и может добавить улицу с помощью метода post
 
 class StreetApiView(APIView):
     def get(self, request,format=None):
