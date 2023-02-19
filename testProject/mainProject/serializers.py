@@ -5,6 +5,7 @@ from datetime import datetime
 
 #http://127.0.0.1:8000/city 
 class CitySerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = City
         fields = '__all__'
@@ -67,6 +68,8 @@ class ShopSearchSerializer(serializers.ModelSerializer):
             return shopStatus
         else:   
             return shopStatus
+        
+
 
     class Meta:
         model = Shop
