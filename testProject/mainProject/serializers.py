@@ -10,31 +10,25 @@ class CitySerializer(serializers.ModelSerializer):
         model = City
         fields = '__all__'
 
-
 #http://127.0.0.1:8000/city/street
 class StreetSerializer(serializers.ModelSerializer):
-    city_name= serializers.SerializerMethodField(source = 'get_city_name')
-    def get_city_name(self, obj):
-        return obj.city.name
+
+    city = CitySerializer()
+
     class Meta:
         model = Street
-        fields = ['name','city_name']
+        fields = ['name','city']
 
 
 #http://127.0.0.1:8000/shops 
 class ShopSerializer(serializers.ModelSerializer):
-     city_name= serializers.SerializerMethodField(source = 'get_city_name')
-     street_name = serializers.SerializerMethodField(source= 'get_street_name')
 
-     def get_city_name(self, obj):
-        return obj.city.name
+     city= CitySerializer()
+     street = StreetSerializer()
 
-     def get_street_name(self, obj):
-        return obj.street.name
- 
      class Meta:
         model = Shop
-        fields = ['name','house','opening_time','closing_time','city_name','street_name']
+        fields = ['name','house','opening_time','closing_time','city','street']
 
 class PostShopSerializer(serializers.ModelSerializer):
  
@@ -42,20 +36,11 @@ class PostShopSerializer(serializers.ModelSerializer):
         model = Shop
         fields = '__all__'
 
-
-
-
 #http://127.0.0.1:8000/shop/?city=1&street=3&open=1
 class ShopSearchSerializer(serializers.ModelSerializer):
     isOpen = serializers.SerializerMethodField('timeDifference')
-    city_name= serializers.SerializerMethodField(source = 'get_city_name')
-    street_name = serializers.SerializerMethodField(source= 'get_street_name')
-
-    def get_city_name(self, obj):
-        return obj.city.name
-
-    def get_street_name(self, obj):
-        return obj.street.name
+    city= serializers.CharField(source='city.name')
+    street = serializers.CharField(source='street.name')
 
     def timeDifference(self,obj):
         opening_time = obj.opening_time
@@ -68,11 +53,9 @@ class ShopSearchSerializer(serializers.ModelSerializer):
             return shopStatus
         else:   
             return shopStatus
-        
-
-
+    
     class Meta:
         model = Shop
-        fields =['name','city_name','street_name','house','opening_time','closing_time','isOpen']
+        fields =['name','city','street','house','opening_time','closing_time','isOpen']
 
 
