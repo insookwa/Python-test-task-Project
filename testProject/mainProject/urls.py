@@ -11,6 +11,4 @@ urlpatterns = [
     path('city',CityApiView.as_view(),name='all-cities' ),
     path('city/street',StreetApiView.as_view(),name='all-streets' ),
 
-
-
 ]

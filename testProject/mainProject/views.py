@@ -4,7 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status 
 from tkinter.tix import Tree
-from datetime import datetime
+from .filters import shopSearchFilter
+
 
 #http://127.0.0.1:8000/shops :Это возвращает при вызове метода get и добавляет магазин при завершении публикации
 class ShopsApiView(APIView):
@@ -40,21 +41,10 @@ class ShopSearchView(APIView):
         city = self.request.query_params.get('city',None)
         open = self.request.query_params.get('open',None)
 
-        now = datetime.now()
-        requestTime = now.time()
-        
-        response = Shop.objects.filter(street=street,city = city)
-        if(open==1):   
-            newResponse =response.objects.filter(closing_time__gte=requestTime)
-            serializer = ShopSearchSerializer(newResponse,many = Tree)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        elif(open==0):
-            newResponse =response.objects.filter(closing_time__lte=requestTime)
-            serializer = ShopSearchSerializer(newResponse ,many = Tree)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            serializer = ShopSearchSerializer(response ,many = Tree)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        return shopSearchFilter(open,city,street)
+
+
+
 
 #http://127.0.0.1:8000/city Это возвращает и добавляет город
 class CityApiView(APIView):
@@ -68,7 +58,6 @@ class CityApiView(APIView):
     def post(self,request,*args, **kwargs):
         data = {
                 'name' : request.data.get('name'),
-
         }
 
         serializer = CitySerializer(data=data)
