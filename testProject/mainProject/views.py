@@ -3,7 +3,7 @@ from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status 
-from tkinter.tix import Tree
+#from tkinter.tix import Tree
 from .filters import shopSearchFilter
 
 
@@ -12,7 +12,7 @@ class ShopsApiView(APIView):
 
     def get(self,request,format=None):
         response  = Shop.objects.all()
-        serializer =ShopSerializer(response ,many=Tree)
+        serializer =ShopSerializer(response ,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
     
@@ -52,7 +52,7 @@ class CityApiView(APIView):
     def get(self,request,format=None):
         
         response = City.objects.all()
-        serializer = CitySerializer(response,many=Tree)
+        serializer = CitySerializer(response,many=True)
         return Response(serializer.data)
         
     def post(self,request,*args, **kwargs):
